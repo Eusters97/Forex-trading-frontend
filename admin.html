@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container my-5">
+        <h2>Admin Panel</h2>
+        <form id="admin-login" style="display: none;">
+            <input type="text" id="admin-username" class="form-control" placeholder="Username" required>
+            <input type="password" id="admin-password" class="form-control my-2" placeholder="Password" required>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <div id="admin-content"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            if (!localStorage.getItem('admin')) {
+                $('#admin-login').show();
+            } else {
+                loadAdminContent();
+            }
+        });
+
+        $('#admin-login').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: 'https://your-render-backend.com/api/admin',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    username: $('#admin-username').val(),
+                    password: $('#admin-password').val()
+                }),
+                success: function(response) {
+                    localStorage.setItem('admin', true);
+                    $('#admin-login').hide();
+                    loadAdminContent();
+                },
+                error: function(xhr) {
+                    $('#admin-content').html('<p class="text-danger">' + xhr.responseJSON.error + '</p>');
+                }
+            });
+        });
+
+        function loadAdminContent() {
+            $.get('https://your-render-backend.com/api/admin', function(data) {
+                let html = '<h3>Investments</h3>';
+                data.investments.forEach(inv => {
+                    html += `<p>User ID: ${inv.user_id}, Amount: $${inv.amount}, Plan: ${inv.plan}, Profit: $${inv.profit}</p>`;
+                });
+                html += '<h3>Payments</h3>';
+                data.payments.forEach(p => {
+                    html += `<p>User ID: ${p.user_id}, Amount: $${p.amount}, Type: ${p.type}</p>`;
+                });
+                $('#admin-content').html(html);
+            });
+        }
+    </script>
+</body>
+</html>

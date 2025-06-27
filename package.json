@@ -1,0 +1,8 @@
+{
+  "name": "forex-trading-signals-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'Copying templates to publish directory' && cp -r templates/* . && cp -r static/* ."
+  },
+  "dependencies": {}
+}
